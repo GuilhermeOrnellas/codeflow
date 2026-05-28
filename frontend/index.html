@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeFix — Landing Page + MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #181818;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0ede8;
+  --muted: #888580;
+  --muted2: #555250;
+  --accent: #c8f060;
+  --accent2: #a8d840;
+  --red: #ff5a5a;
+  --amber: #f5a623;
+  --green: #4cde8a;
+  --blue: #60a8f0;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Instrument Serif', serif;
+  --sans: 'Geist', sans-serif;
+}
+
+html { background: var(--bg); color: var(--text); font-family: var(--sans); }
+body { min-height: 100vh; overflow-x: hidden; }
+
+/* NAV */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 56px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+.nav-logo { font-family: var(--mono); font-size: 14px; color: var(--accent); letter-spacing: 0.05em; }
+.nav-tabs { display: flex; gap: 2px; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+.nav-tab { font-size: 12px; padding: 5px 14px; border-radius: 5px; cursor: pointer; color: var(--muted); transition: all 0.2s; border: none; background: none; font-family: var(--sans); }
+.nav-tab.active { background: var(--bg2); color: var(--text); border: 1px solid var(--border2); }
+.nav-tab:hover:not(.active) { color: var(--text); }
+
+/* SCREENS */
+.screen { display: none; padding-top: 56px; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ===== LANDING PAGE ===== */
+#landing { background: var(--bg); }
+
+.hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; position: relative; overflow: hidden; }
+
+.hero-grid {
+  position: absolute; inset: 0; opacity: 0.035;
+  background-image: linear-gradient(var(--border2) 1px, transparent 1px), linear-gradient(90deg, var(--border2) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(200,240,96,0.06) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+
+.badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; padding: 5px 12px; border: 1px solid rgba(200,240,96,0.3); border-radius: 20px; color: var(--accent); margin-bottom: 2rem; background: rgba(200,240,96,0.05); }
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+.hero h1 { font-family: var(--serif); font-size: clamp(3rem, 7vw, 6rem); font-weight: 400; line-height: 1.05; max-width: 900px; margin-bottom: 1.5rem; }
+.hero h1 em { font-style: italic; color: var(--accent); }
+
+.hero-sub { font-size: 18px; color: var(--muted); max-width: 520px; line-height: 1.6; margin-bottom: 2.5rem; font-weight: 300; }
+
+.cta-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.btn-primary { display: flex; align-items: center; gap: 8px; background: var(--accent); color: #0a0a0a; font-size: 14px; font-weight: 600; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); transition: all 0.2s; }
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-ghost { font-size: 14px; color: var(--muted); background: none; border: 1px solid var(--border2); padding: 12px 24px; border-radius: 8px; cursor: pointer; font-family: var(--sans); transition: all 0.2s; }
+.btn-ghost:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+
+.hero-note { margin-top: 1.5rem; font-size: 12px; color: var(--muted2); font-family: var(--mono); }
+
+/* CODE PREVIEW */
+.code-preview { margin: 0 auto; max-width: 900px; padding: 0 2rem 5rem; }
+.code-window { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.code-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg3); }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-tabs { display: flex; gap: 1px; margin-left: 12px; }
+.code-tab { font-family: var(--mono); font-size: 11px; padding: 3px 10px; border-radius: 4px; color: var(--muted); cursor: pointer; }
+.code-tab.active { background: var(--bg2); color: var(--text); }
+.code-body { padding: 20px; font-family: var(--mono); font-size: 13px; line-height: 1.7; }
+.line-del { color: var(--red); background: rgba(255,90,90,0.08); display: block; padding: 0 8px; margin: 0 -8px; border-left: 2px solid var(--red); }
+.line-add { color: var(--green); background: rgba(76,222,138,0.08); display: block; padding: 0 8px; margin: 0 -8px; border-left: 2px solid var(--green); }
+.line-neu { display: block; padding: 0 8px; margin: 0 -8px; color: var(--muted); }
+.fix-badge { display: inline-block; background: rgba(200,240,96,0.12); border: 1px solid rgba(200,240,96,0.3); border-radius: 4px; font-size: 11px; padding: 2px 8px; color: var(--accent); margin-top: 12px; }
+.fix-explain { font-size: 12px; color: var(--muted); margin-top: 6px; font-family: var(--sans); line-height: 1.5; }
+
+/* STATS */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; max-width: 700px; margin: 0 auto 5rem; }
+.stat { background: var(--bg2); padding: 2rem; text-align: center; }
+.stat-num { font-family: var(--serif); font-size: 3rem; color: var(--accent); line-height: 1; margin-bottom: 6px; }
+.stat-label { font-size: 13px; color: var(--muted); }
+
+/* HOW IT WORKS */
+.section { padding: 5rem 2rem; max-width: 900px; margin: 0 auto; }
+.section-label { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 1rem; }
+.section-title { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; margin-bottom: 3rem; line-height: 1.2; }
+
+.steps { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.step { background: var(--bg2); display: grid; grid-template-columns: 56px 1fr; gap: 0; }
+.step-num { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; color: var(--muted2); border-right: 1px solid var(--border); background: var(--bg3); }
+.step-content { padding: 20px 24px; }
+.step-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step-time { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 6px; }
+
+/* PRICING */
+.pricing { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.plan { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; position: relative; }
+.plan.featured { border-color: var(--accent); background: rgba(200,240,96,0.03); }
+.plan-badge { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #0a0a0a; font-size: 10px; font-weight: 600; padding: 3px 12px; border-radius: 0 0 6px 6px; font-family: var(--mono); }
+.plan-name { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+.plan-price { font-family: var(--serif); font-size: 2.5rem; line-height: 1; margin-bottom: 4px; }
+.plan-period { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.plan-features li { font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; }
+.plan-features li::before { content: '—'; color: var(--accent); flex-shrink: 0; font-family: var(--mono); }
+.plan-features li.highlight { color: var(--text); }
+.plan-btn { width: 100%; padding: 10px; border-radius: 6px; font-size: 13px; font-family: var(--sans); cursor: pointer; border: 1px solid var(--border2); background: none; color: var(--text); transition: all 0.2s; }
+.plan-btn:hover { background: var(--bg3); }
+.plan.featured .plan-btn { background: var(--accent); color: #0a0a0a; border-color: var(--accent); font-weight: 600; }
+.plan.featured .plan-btn:hover { background: var(--accent2); }
+
+/* FOOTER */
+.footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 12px; color: var(--muted2); font-family: var(--mono); }
+
+/* ===== ONBOARDING FLOW ===== */
+#onboarding { background: var(--bg); }
+.onboard-wrap { max-width: 600px; margin: 0 auto; padding: 3rem 2rem; }
+.onboard-progress { display: flex; gap: 6px; margin-bottom: 2.5rem; }
+.prog-step { flex: 1; height: 3px; border-radius: 2px; background: var(--bg3); transition: background 0.3s; }
+.prog-step.done { background: var(--accent); }
+.prog-step.active { background: var(--accent); opacity: 0.5; }
+
+.onboard-step { display: none; }
+.onboard-step.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.onboard-tag { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-bottom: 0.75rem; }
+.onboard-title { font-family: var(--serif); font-size: 2rem; margin-bottom: 0.75rem; line-height: 1.2; }
+.onboard-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 2rem; }
+
+.repo-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+.repo-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.repo-item:hover, .repo-item.selected { border-color: var(--accent); background: rgba(200,240,96,0.04); }
+.repo-icon { width: 32px; height: 32px; border-radius: 6px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.repo-name { font-size: 14px; font-weight: 500; }
+.repo-meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.repo-check { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.2s; }
+.repo-item.selected .repo-check { background: var(--accent); border-color: var(--accent); color: #0a0a0a; }
+
+.scanning-wrap { text-align: center; padding: 2rem 0; }
+.scan-circle { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--accent); margin: 0 auto 1.5rem; animation: spin 1s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.scan-log { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: left; max-height: 160px; overflow-y: auto; margin-top: 1.5rem; }
+.scan-line { display: flex; gap: 8px; margin-bottom: 4px; }
+.scan-line .t { color: var(--muted2); }
+.scan-line .ok { color: var(--green); }
+.scan-line .warn { color: var(--amber); }
+
+.result-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+.result-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+.result-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.sev-badge { font-size: 10px; font-family: var(--mono); padding: 2px 7px; border-radius: 3px; font-weight: 500; }
+.sev-high { background: rgba(255,90,90,0.12); color: var(--red); border: 1px solid rgba(255,90,90,0.2); }
+.sev-med { background: rgba(245,166,35,0.12); color: var(--amber); border: 1px solid rgba(245,166,35,0.2); }
+.sev-low { background: rgba(96,168,240,0.12); color: var(--blue); border: 1px solid rgba(96,168,240,0.2); }
+.result-title { font-size: 13px; font-weight: 500; }
+.result-file { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.result-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+.onboard-actions { display: flex; gap: 10px; }
+.btn-next { flex: 1; background: var(--accent); color: #0a0a0a; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: all 0.2s; }
+.btn-next:hover { background: var(--accent2); }
+.btn-back { background: none; border: 1px solid var(--border2); color: var(--muted); padding: 12px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; font-family: var(--sans); transition: all 0.2s; }
+.btn-back:hover { color: var(--text); }
+
+/* ===== DASHBOARD ===== */
+#dashboard { background: var(--bg); }
+.dash-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 56px); }
+.sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 1.5rem 0; }
+.sidebar-section { padding: 0 1rem; margin-bottom: 1.5rem; }
+.sidebar-label { font-size: 10px; font-family: var(--mono); color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; padding: 0 0.75rem; margin-bottom: 6px; }
+.sidebar-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 6px; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.sidebar-item:hover { background: var(--bg3); color: var(--text); }
+.sidebar-item.active { background: rgba(200,240,96,0.1); color: var(--accent); }
+.sidebar-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.dash-main { padding: 2rem; overflow-y: auto; }
+.dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+.dash-title { font-family: var(--serif); font-size: 1.75rem; }
+.dash-actions { display: flex; gap: 8px; }
+.btn-sm { font-size: 12px; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: var(--sans); border: 1px solid var(--border2); background: none; color: var(--muted); transition: all 0.2s; }
+.btn-sm:hover { color: var(--text); background: var(--bg3); }
+.btn-sm.primary { background: var(--accent); color: #0a0a0a; border-color: var(--accent); font-weight: 500; }
+.btn-sm.primary:hover { background: var(--accent2); }
+
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.metric { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.metric-label { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-bottom: 6px; }
+.metric-val { font-family: var(--serif); font-size: 2rem; line-height: 1; margin-bottom: 4px; }
+.metric-delta { font-size: 11px; font-family: var(--mono); }
+.delta-up { color: var(--green); }
+.delta-down { color: var(--red); }
+
+.dash-grid { display: grid; grid-template-columns: 1fr 360px; gap: 12px; }
+.panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.panel-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.panel-title { font-size: 13px; font-weight: 500; }
+.panel-action { font-size: 11px; color: var(--muted); font-family: var(--mono); cursor: pointer; }
+.panel-action:hover { color: var(--accent); }
+
+.issue-list { padding: 8px; }
+.issue-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+.issue-row:hover { background: var(--bg3); }
+.issue-sev { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.issue-sev.high { background: var(--red); }
+.issue-sev.med { background: var(--amber); }
+.issue-sev.low { background: var(--blue); }
+.issue-body { flex: 1; min-width: 0; }
+.issue-title { font-size: 13px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.issue-meta { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.issue-fix { font-size: 11px; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(200,240,96,0.3); color: var(--accent); background: rgba(200,240,96,0.06); cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+.issue-fix:hover { background: rgba(200,240,96,0.12); }
+
+.chart-wrap { padding: 16px; }
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 100px 1fr 36px; gap: 8px; align-items: center; }
+.bar-label { font-size: 12px; color: var(--muted); font-family: var(--mono); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.bar-val { font-size: 12px; font-family: var(--mono); color: var(--muted); }
+
+.activity-list { padding: 8px; }
+.activity-item { display: flex; gap: 10px; padding: 8px 8px; align-items: flex-start; border-radius: 6px; }
+.activity-item:hover { background: var(--bg3); }
+.act-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.act-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.act-text strong { color: var(--text); font-weight: 500; }
+.act-time { font-size: 11px; color: var(--muted2); font-family: var(--mono); margin-top: 2px; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: none; align-items: center; justify-content: center; padding: 2rem; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 12px; max-width: 560px; width: 100%; padding: 24px; animation: fadeIn 0.2s ease; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.modal-title { font-size: 15px; font-weight: 500; }
+.modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; }
+.modal-code { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: var(--mono); font-size: 12px; line-height: 1.7; margin-bottom: 12px; overflow-x: auto; }
+.modal-explain { font-size: 13px; color: var(--muted); line-height: 1.6; padding: 12px; background: rgba(200,240,96,0.04); border: 1px solid rgba(200,240,96,0.1); border-radius: 6px; margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-logo">codefix_</span>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showScreen('landing')">Landing Page</button>
+    <button class="nav-tab" onclick="showScreen('onboarding')">Onboarding</button>
+    <button class="nav-tab" onclick="showScreen('dashboard')">Dashboard</button>
+  </div>
+  <span style="font-size:11px;color:var(--muted2);font-family:var(--mono)">CodeFlow</span>
+</nav>
+
+<!-- ===== LANDING PAGE ===== -->
+<section class="screen active" id="landing">
+  <div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="badge"><span class="badge-dot"></span>Autofix inteligente para times de dev</div>
+    <h1>Código limpo<br><em>sem DevOps,</em><br>sem setup.</h1>
+    <p class="hero-sub">Detecta, explica e corrige bugs automaticamente. Conecta no GitHub em 5 minutos. Feito para startups de 2 a 30 devs.</p>
+    <div class="cta-row">
+      <button class="btn-primary" onclick="showScreen('onboarding')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Começar grátis — 1 repo
+      </button>
+      <button class="btn-ghost" onclick="showScreen('dashboard')">Ver demo do dashboard</button>
+    </div>
+    <p class="hero-note">// sem cartão de crédito &nbsp;·&nbsp; setup em 5 minutos &nbsp;·&nbsp; cancela quando quiser</p>
+  </div>
+
+  <div class="code-preview">
+    <div class="code-window">
+      <div class="code-header">
+        <span class="dot" style="background:#ff5f57"></span>
+        <span class="dot" style="background:#febc2e"></span>
+        <span class="dot" style="background:#28c840"></span>
+        <div class="code-tabs">
+          <span class="code-tab active">visualizer.py</span>
+          <span class="code-tab">autofix ✓</span>
+        </div>
+      </div>
+      <div class="code-body">
+        <span class="line-neu">try:</span>
+        <span class="line-del">-    cep_response = requests.get(f"https://viacep.com.br/{cep}/json/")</span>
+        <span class="line-del">-    dados = cep_response.json()</span>
+        <span class="line-del">-    if dados.get("erro"):</span>
+        <span class="line-del">-        print("Erro! CEP Inexistente.")</span>
+        <span class="line-add">+def consultar_cep(cep: str) -&gt; dict | None:</span>
+        <span class="line-add">+    """Consulta CEP via ViaCEP com validação e tratamento de erro."""</span>
+        <span class="line-add">+    if not isinstance(cep, str) or not cep.isdigit() or len(cep) != 8:</span>
+        <span class="line-add">+        print(f"CEP '{cep}' inválido. Use 8 dígitos numéricos.")</span>
+        <span class="line-add">+        return None</span>
+        <span class="line-add">+    cep_response = requests.get(f"https://viacep.com.br/ws/{cep}/json/")</span>
+        <span class="line-add">+    cep_response.raise_for_status()</span>
+        <span class="line-add">+    dados = cep_response.json()</span>
+        <span class="line-add">+    if dados.get("erro"):</span>
+        <span class="line-add">+        print(f"CEP '{cep}' não encontrado.")</span>
+        <span class="line-add">+        return None</span>
+        <span class="line-add">+    return dados</span>
+        <span class="fix-badge">✦ autofix aplicado</span>
+        <div class="fix-explain">Variável <code>cep</code> não definida no escopo. Lógica encapsulada em função com validação de formato, tratamento de HTTP errors e tipagem. Reutilizável e testável.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:700px;margin:0 auto;padding:0 2rem">
+    <div class="stats">
+      <div class="stat"><div class="stat-num">5min</div><div class="stat-label">até o primeiro fix</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">linhas de config</div></div>
+      <div class="stat"><div class="stat-num">12+</div><div class="stat-label">linguagens suportadas</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">// como funciona</div>
+    <div class="section-title">Do repo ao fix<br>em minutos.</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Instala o GitHub App</div>
+          <div class="step-desc">Um clique. Sem YAML, sem CI, sem configuração. Você escolhe quais repositórios conectar.</div>
+          <div class="step-time">→ &lt; 2 minutos</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Scan automático do repositório</div>
+          <div class="step-desc">Analisa histórico de commits, detecta padrões do seu stack e identifica problemas por severidade.</div>
+          <div class="step-time">→ &lt; 3 minutos</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Fix automático com explicação</div>
+          <div class="step-desc">Para cada problema, gera o fix + uma explicação curta do porquê. Abre PR automaticamente ou commita direto.</div>
+          <div class="step-time">→ PR aberto em segundos</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <div class="step-title">Dashboard de time</div>
+          <div class="step-desc">Visualize quais erros se repetem, por repositório e por dev. CTO e tech lead têm visibilidade real da saúde do código.</div>
+          <div class="step-time">→ dados em tempo real</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">// planos</div>
+    <div class="section-title">Simples. Sem surpresa.</div>
+    <div class="pricing">
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-period">para sempre</div>
+        <ul class="plan-features">
+          <li class="highlight">1 repositório</li>
+          <li class="highlight">Fixes ilimitados</li>
+          <li>Dashboard básico</li>
+          <li>Suporte por email</li>
+        </ul>
+        <button class="plan-btn" onclick="showScreen('onboarding')">Começar grátis</button>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">mais popular</div>
+        <div class="plan-name">Team</div>
+        <div class="plan-price">$49</div>
+        <div class="plan-period">por mês</div>
+        <ul class="plan-features">
+          <li class="highlight">Repos ilimitados</li>
+          <li class="highlight">Dashboard de time completo</li>
+          <li class="highlight">PR automático</li>
+          <li class="highlight">Alertas por Slack</li>
+          <li>Até 30 devs</li>
+        </ul>
+        <button class="plan-btn" onclick="showScreen('onboarding')">Começar trial de 14 dias</button>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Scale</div>
+        <div class="plan-price">$149</div>
+        <div class="plan-period">por mês</div>
+        <ul class="plan-features">
+          <li class="highlight">Tudo do Team</li>
+          <li class="highlight">Regras customizadas</li>
+          <li class="highlight">SSO / SAML</li>
+          <li>Devs ilimitados</li>
+          <li>SLA + suporte dedicado</li>
+        </ul>
+        <button class="plan-btn">Falar com vendas</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">codefix_ &nbsp;·&nbsp; feito para quem escreve código, não para quem configura ferramenta</div>
+</section>
+
+<!-- ===== ONBOARDING ===== -->
+<section class="screen" id="onboarding">
+  <div class="onboard-wrap">
+    <div class="onboard-progress">
+      <div class="prog-step active" id="prog-1"></div>
+      <div class="prog-step" id="prog-2"></div>
+      <div class="prog-step" id="prog-3"></div>
+      <div class="prog-step" id="prog-4"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="onboard-step active" id="step-1">
+      <div class="onboard-tag">// passo 1 de 4</div>
+      <h2 class="onboard-title">Conecta sua conta GitHub</h2>
+      <p class="onboard-sub">Autorize o acesso para que possamos instalar o GitHub App nos seus repositórios. Você controla quais repos conectar.</p>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:1.5rem;display:flex;align-items:center;gap:16px">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="var(--text)"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.749 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <div>
+          <div style="font-size:14px;font-weight:500;margin-bottom:3px">GitHub OAuth</div>
+          <div style="font-size:12px;color:var(--muted)">Acesso apenas de leitura aos repositórios selecionados</div>
+        </div>
+        <button class="btn-next" style="flex:none;width:auto;padding:10px 20px" onclick="nextStep(2)">Autorizar →</button>
+      </div>
+      <p style="font-size:12px;color:var(--muted2);font-family:var(--mono)">// nunca escrevemos no seu código sem sua aprovação</p>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="onboard-step" id="step-2">
+      <div class="onboard-tag">// passo 2 de 4</div>
+      <h2 class="onboard-title">Escolhe um repositório</h2>
+      <p class="onboard-sub">Selecione o repo que quer analisar primeiro. No plano gratuito, você começa com 1.</p>
+      <div class="repo-list">
+        <div class="repo-item" onclick="selectRepo(this)">
+          <div class="repo-icon">⚡</div>
+          <div>
+            <div class="repo-name">startup/api-core</div>
+            <div class="repo-meta">Python · 243 commits · atualizado há 2h</div>
+          </div>
+          <div class="repo-check">✓</div>
+        </div>
+        <div class="repo-item" onclick="selectRepo(this)">
+          <div class="repo-icon">🌐</div>
+          <div>
+            <div class="repo-name">startup/web-frontend</div>
+            <div class="repo-meta">TypeScript · 891 commits · atualizado há 1d</div>
+          </div>
+          <div class="repo-check">✓</div>
+        </div>
+        <div class="repo-item" onclick="selectRepo(this)">
+          <div class="repo-icon">🔧</div>
+          <div>
+            <div class="repo-name">startup/data-pipeline</div>
+            <div class="repo-meta">Python · 156 commits · atualizado há 3d</div>
+          </div>
+          <div class="repo-check">✓</div>
+        </div>
+      </div>
+      <div class="onboard-actions">
+        <button class="btn-back" onclick="nextStep(1)">← Voltar</button>
+        <button class="btn-next" onclick="nextStep(3)">Analisar repositório →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 — Scanning -->
+    <div class="onboard-step" id="step-3">
+      <div class="onboard-tag">// passo 3 de 4</div>
+      <h2 class="onboard-title">Analisando seu código</h2>
+      <p class="onboard-sub">Estamos escaneando o repositório. Isso leva menos de 1 minuto.</p>
+      <div class="scanning-wrap">
+        <div class="scan-circle" id="scan-circle"></div>
+        <div style="font-size:14px;color:var(--muted)" id="scan-status">Detectando linguagens e frameworks...</div>
+      </div>
+      <div class="scan-log" id="scan-log"></div>
+    </div>
+
+    <!-- Step 4 — Results -->
+    <div class="onboard-step" id="step-4">
+      <div class="onboard-tag">// passo 4 de 4</div>
+      <h2 class="onboard-title">Encontramos <em style="font-style:italic;color:var(--accent)">8 problemas</em></h2>
+      <p class="onboard-sub">No seu primeiro scan. Veja os principais — e deixa a gente abrir os PRs.</p>
+      <div class="result-list">
+        <div class="result-item">
+          <div class="result-header">
+            <span class="sev-badge sev-high">HIGH</span>
+            <span class="result-title">Variável não definida no escopo</span>
+          </div>
+          <div class="result-file">visualizer.py · linha 4</div>
+          <div class="result-desc">A variável `cep` é usada sem estar definida no escopo da função. Pode causar NameError em produção.</div>
+        </div>
+        <div class="result-item">
+          <div class="result-header">
+            <span class="sev-badge sev-high">HIGH</span>
+            <span class="result-title">HTTP error não tratado</span>
+          </div>
+          <div class="result-file">api/client.py · linha 31</div>
+          <div class="result-desc">requests.get() sem raise_for_status(). Erros 4xx/5xx passam silenciosamente.</div>
+        </div>
+        <div class="result-item">
+          <div class="result-header">
+            <span class="sev-badge sev-med">MED</span>
+            <span class="result-title">Sem validação de input</span>
+          </div>
+          <div class="result-file">routes/user.py · linha 18</div>
+          <div class="result-desc">Parâmetro `email` não validado antes de consultar o banco.</div>
+        </div>
+        <div class="result-item">
+          <div class="result-header">
+            <span class="sev-badge sev-low">LOW</span>
+            <span class="result-title">+ 5 issues de clareza e manutenibilidade</span>
+          </div>
+          <div class="result-file">múltiplos arquivos</div>
+          <div class="result-desc">Funções longas, falta de tipagem, código duplicado.</div>
+        </div>
+      </div>
+      <div class="onboard-actions">
+        <button class="btn-back" onclick="nextStep(2)">← Voltar</button>
+        <button class="btn-next" onclick="showScreen('dashboard')">Abrir PRs com fixes → Dashboard</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== DASHBOARD ===== -->
+<section class="screen" id="dashboard">
+  <div class="dash-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div style="padding:0 1rem;margin-bottom:1rem;font-family:var(--mono);font-size:13px;color:var(--accent)">codefix_</div>
+        <div style="padding:0 1rem;margin-bottom:1rem">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--muted);font-family:var(--mono)">startup/api-core ▾</div>
+        </div>
+      </div>
+      <div class="sidebar-label">visão geral</div>
+      <div class="sidebar-section">
+        <div class="sidebar-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+        <div class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          Issues
+        </div>
+        <div class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          Pull Requests
+        </div>
+        <div class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Time
+        </div>
+      </div>
+      <div class="sidebar-label" style="margin-top:1rem">configurações</div>
+      <div class="sidebar-section">
+        <div class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>
+          Regras
+        </div>
+        <div class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          Integrações
+        </div>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-header">
+        <div>
+          <div class="dash-title">Dashboard</div>
+          <div style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:2px">startup/api-core · última análise há 2 min</div>
+        </div>
+        <div class="dash-actions">
+          <button class="btn-sm">Exportar relatório</button>
+          <button class="btn-sm primary" onclick="openModal()">↑ Abrir PRs com fixes</button>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">issues abertas</div>
+          <div class="metric-val" style="color:var(--red)">8</div>
+          <div class="metric-delta delta-down">↑ 3 novas hoje</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">fixes aplicados</div>
+          <div class="metric-val" style="color:var(--green)">24</div>
+          <div class="metric-delta delta-up">↑ 6 essa semana</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">PRs abertos</div>
+          <div class="metric-val">3</div>
+          <div class="metric-delta" style="color:var(--muted)">aguardando review</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">score do código</div>
+          <div class="metric-val" style="color:var(--accent)">74</div>
+          <div class="metric-delta delta-up">↑ +8 vs semana passada</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div>
+          <div class="panel" style="margin-bottom:12px">
+            <div class="panel-header">
+              <span class="panel-title">Issues abertas</span>
+              <span class="panel-action" onclick="openModal()">abrir todos os PRs →</span>
+            </div>
+            <div class="issue-list">
+              <div class="issue-row" onclick="openModal()">
+                <div class="issue-sev high"></div>
+                <div class="issue-body">
+                  <div class="issue-title">Variável não definida no escopo</div>
+                  <div class="issue-meta">visualizer.py · linha 4 · Python</div>
+                </div>
+                <div class="issue-fix">Fix →</div>
+              </div>
+              <div class="issue-row" onclick="openModal()">
+                <div class="issue-sev high"></div>
+                <div class="issue-body">
+                  <div class="issue-title">HTTP error não tratado</div>
+                  <div class="issue-meta">api/client.py · linha 31 · Python</div>
+                </div>
+                <div class="issue-fix">Fix →</div>
+              </div>
+              <div class="issue-row">
+                <div class="issue-sev med"></div>
+                <div class="issue-body">
+                  <div class="issue-title">Sem validação de input</div>
+                  <div class="issue-meta">routes/user.py · linha 18 · Python</div>
+                </div>
+                <div class="issue-fix">Fix →</div>
+              </div>
+              <div class="issue-row">
+                <div class="issue-sev med"></div>
+                <div class="issue-body">
+                  <div class="issue-title">SQL query sem parametrização</div>
+                  <div class="issue-meta">db/queries.py · linha 55 · Python</div>
+                </div>
+                <div class="issue-fix">Fix →</div>
+              </div>
+              <div class="issue-row">
+                <div class="issue-sev low"></div>
+                <div class="issue-body">
+                  <div class="issue-title">Função com 80+ linhas</div>
+                  <div class="issue-meta">services/payment.py · linha 12 · Python</div>
+                </div>
+                <div class="issue-fix">Fix →</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Erros mais recorrentes</span>
+              <span class="panel-action">ver todos</span>
+            </div>
+            <div class="chart-wrap">
+              <div class="bar-chart">
+                <div class="bar-row">
+                  <div class="bar-label">Sem tratamento</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+                  <div class="bar-val">14</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-label">Sem tipagem</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--blue)"></div></div>
+                  <div class="bar-val">10</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-label">Código duplicado</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:44%;background:var(--amber)"></div></div>
+                  <div class="bar-val">8</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-label">Funções longas</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:33%;background:var(--muted2)"></div></div>
+                  <div class="bar-val">6</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-label">Sem validação</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--red)"></div></div>
+                  <div class="bar-val">4</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Atividade recente</span>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="act-dot" style="background:var(--green)"></div>
+                <div>
+                  <div class="act-text">PR <strong>#47</strong> com fix de HTTP errors mergeado por <strong>Ana</strong></div>
+                  <div class="act-time">há 12 min</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="act-dot" style="background:var(--accent)"></div>
+                <div>
+                  <div class="act-text"><strong>3 novos issues</strong> detectados no push de <strong>Pedro</strong></div>
+                  <div class="act-time">há 2h</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="act-dot" style="background:var(--blue)"></div>
+                <div>
+                  <div class="act-text">Scan completo: <strong>api-core</strong> analisado, 8 issues encontradas</div>
+                  <div class="act-time">há 2h</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="act-dot" style="background:var(--green)"></div>
+                <div>
+                  <div class="act-text">PR <strong>#45</strong> com fix de SQL injection mergeado</div>
+                  <div class="act-time">ontem</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="act-dot" style="background:var(--amber)"></div>
+                <div>
+                  <div class="act-text">PR <strong>#44</strong> aguarda review de <strong>Carlos</strong></div>
+                  <div class="act-time">ontem</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Issues por dev</span>
+            </div>
+            <div class="chart-wrap">
+              <div class="bar-chart">
+                <div class="bar-row" style="grid-template-columns:80px 1fr 30px">
+                  <div class="bar-label">Pedro</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+                  <div class="bar-val">12</div>
+                </div>
+                <div class="bar-row" style="grid-template-columns:80px 1fr 30px">
+                  <div class="bar-label">Ana</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:53%;background:var(--blue)"></div></div>
+                  <div class="bar-val">8</div>
+                </div>
+                <div class="bar-row" style="grid-template-columns:80px 1fr 30px">
+                  <div class="bar-label">Carlos</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--amber)"></div></div>
+                  <div class="bar-val">6</div>
+                </div>
+                <div class="bar-row" style="grid-template-columns:80px 1fr 30px">
+                  <div class="bar-label">Mariana</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--muted2)"></div></div>
+                  <div class="bar-val">3</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- MODAL: Fix preview -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Autofix — visualizer.py · linha 4</span>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-code">
+<span class="line-del">-  cep_response = requests.get(f"https://viacep.com.br/{cep}/json/")</span>
+<span class="line-del">-  dados = cep_response.json()</span>
+<span class="line-del">-  if dados.get("erro"):</span>
+<span class="line-del">-      print("Erro! CEP Inexistente.")</span>
+<span class="line-add">+def consultar_cep(cep: str) -> dict | None:</span>
+<span class="line-add">+    if not isinstance(cep, str) or not cep.isdigit() or len(cep) != 8:</span>
+<span class="line-add">+        return None</span>
+<span class="line-add">+    r = requests.get(f"https://viacep.com.br/ws/{cep}/json/")</span>
+<span class="line-add">+    r.raise_for_status()</span>
+<span class="line-add">+    dados = r.json()</span>
+<span class="line-add">+    return None if dados.get("erro") else dados</span>
+    </div>
+    <div class="modal-explain">
+      ✦ <strong>Por que esse fix?</strong> A variável `cep` não estava definida no escopo do bloco try. Encapsulamos em uma função com tipagem explícita, validação de formato (8 dígitos numéricos) e tratamento de HTTP errors via raise_for_status(). O código agora é reutilizável e testável.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="document.getElementById('modal').classList.remove('open')">Ignorar</button>
+      <button class="btn-sm primary" onclick="document.getElementById('modal').classList.remove('open')">✓ Abrir PR com este fix</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const idx = ['landing','onboarding','dashboard'].indexOf(id);
+  document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  if(id === 'onboarding') { nextStep(1); }
+}
+
+function selectRepo(el) {
+  document.querySelectorAll('.repo-item').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+let scanInterval;
+function nextStep(n) {
+  document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.prog-step').forEach((p,i) => {
+    p.classList.remove('done','active');
+    if(i < n-1) p.classList.add('done');
+    if(i === n-1) p.classList.add('active');
+  });
+  document.getElementById('step-'+n).classList.add('active');
+  if(n === 3) startScan();
+}
+
+const scanLines = [
+  ['t','Conectando ao repositório startup/api-core...'],
+  ['ok','✓ Autenticação bem-sucedida'],
+  ['t','Detectando linguagem principal...'],
+  ['ok','✓ Python 3.11 detectado'],
+  ['t','Analisando estrutura de arquivos (47 arquivos)...'],
+  ['ok','✓ Frameworks: FastAPI, SQLAlchemy'],
+  ['warn','⚠ 3 arquivos com complexidade alta'],
+  ['t','Escaneando padrões de código...'],
+  ['ok','✓ Scan concluído: 243 commits analisados'],
+  ['warn','⚠ 8 issues encontradas — 2 críticas'],
+];
+
+function startScan() {
+  clearInterval(scanInterval);
+  const log = document.getElementById('scan-log');
+  const status = document.getElementById('scan-status');
+  log.innerHTML = '';
+  let i = 0;
+  const statuses = ['Detectando linguagens e frameworks...','Analisando commits recentes...','Identificando padrões problemáticos...','Gerando fixes...'];
+  scanInterval = setInterval(() => {
+    if(i < scanLines.length) {
+      const [cls, txt] = scanLines[i];
+      log.innerHTML += `<div class="scan-line"><span class="${cls}">${txt}</span></div>`;
+      log.scrollTop = log.scrollHeight;
+      if(i < statuses.length) status.textContent = statuses[i] || statuses[statuses.length-1];
+      i++;
+    } else {
+      clearInterval(scanInterval);
+      document.getElementById('scan-circle').style.animation = 'none';
+      document.getElementById('scan-circle').style.borderColor = 'var(--accent)';
+      status.textContent = '✓ Análise concluída!';
+      setTimeout(() => nextStep(4), 800);
+    }
+  }, 400);
+}
+
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(e) {
+  if(e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+// ── CodeFlow API Integration ──
+const CF_API = 'http://localhost:8000';
+const CF_TOKEN = localStorage.getItem('cf_token');
+
+async function cfApi(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (CF_TOKEN) opts.headers['Authorization'] = 'Bearer ' + CF_TOKEN;
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(CF_API + path, opts);
+    const d = await r.json();
+    return { ok: r.ok, data: d.data, error: d.error };
+  } catch (e) { return { ok: false, error: 'API offline' }; }
+}
+
+// API status bar
+const apiBar = document.createElement('div');
+apiBar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,0.07);padding:5px 1.5rem;display:flex;align-items:center;gap:8px;font-size:11px;font-family:var(--mono);color:#4a4845;z-index:100';
+apiBar.innerHTML = '<div id="api-dot" style="width:6px;height:6px;border-radius:50%;background:#4a4845"></div><span id="api-lbl">Verificando API...</span><span style="margin-left:auto;color:#4a4845">CodeFlow backend · localhost:8000</span>';
+document.body.appendChild(apiBar);
+
+async function checkApiStatus() {
+  const dot = document.getElementById('api-dot');
+  const lbl = document.getElementById('api-lbl');
+  try {
+    const r = await fetch(CF_API + '/health', { signal: AbortSignal.timeout(2000) });
+    if (r.ok) {
+      dot.style.background = '#4cde8a';
+      lbl.textContent = 'API conectada — CodeFlow backend v1.0';
+      lbl.style.color = '#4cde8a';
+    } else throw 0;
+  } catch {
+    dot.style.background = '#ff5a5a';
+    lbl.textContent = 'API offline — execute: python backend/app.py';
+    lbl.style.color = '#ff5a5a';
+  }
+}
+checkApiStatus();
+setInterval(checkApiStatus, 15000);
+
+</script>
+</body>
+</html>

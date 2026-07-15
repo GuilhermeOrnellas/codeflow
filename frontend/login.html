@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CodeFlow | Login</title>
+
+<style>
+:root{
+    --bg:#0a0a0a;
+    --card:#111111;
+    --border:#242424;
+    --text:#ffffff;
+    --muted:#8b8b8b;
+    --accent:#C8F060;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Inter,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+/* Fundo */
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size:38px 38px;
+    opacity:.25;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    width:700px;
+    height:700px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle,
+        rgba(200,240,96,.10),
+        transparent 70%);
+}
+
+/* Card */
+
+.login{
+    position:relative;
+    z-index:2;
+    width:420px;
+    padding:45px;
+    background:rgba(17,17,17,.92);
+    border:1px solid var(--border);
+    border-radius:18px;
+    backdrop-filter:blur(20px);
+    box-shadow:0 20px 70px rgba(0,0,0,.5);
+}
+
+/* Logo */
+
+.logo{
+    display:inline-block;
+    margin-bottom:35px;
+    color:var(--accent);
+    font-size:24px;
+    font-weight:bold;
+    text-decoration:none;
+    transition:.2s;
+}
+
+.logo:hover{
+    opacity:.8;
+}
+
+/* Textos */
+
+h1{
+    font-size:42px;
+    font-weight:300;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:var(--muted);
+    line-height:1.5;
+    margin-bottom:35px;
+}
+
+/* Inputs */
+
+.input{
+    width:100%;
+    padding:14px 16px;
+    margin-bottom:18px;
+    border-radius:10px;
+    border:1px solid #2c2c2c;
+    background:#0d0d0d;
+    color:#fff;
+    outline:none;
+    transition:.25s;
+}
+
+.input::placeholder{
+    color:#666;
+}
+
+.input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 18px rgba(200,240,96,.2);
+}
+
+/* Linha lembrar-me */
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:28px;
+    font-size:14px;
+}
+
+.row label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.row a{
+    color:var(--accent);
+    text-decoration:none;
+}
+
+.row a:hover{
+    text-decoration:underline;
+}
+
+/* Botões */
+
+button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
+    transition:.25s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+button:not(.github){
+    background:var(--accent);
+    color:#000;
+}
+
+button:not(.github):hover{
+    box-shadow:0 0 25px rgba(200,240,96,.3);
+}
+
+.github{
+    background:transparent;
+    color:#fff;
+    border:1px solid #2d2d2d;
+}
+
+.github:hover{
+    background:#161616;
+}
+
+/* Separador */
+
+.divider{
+    margin:30px 0;
+    text-align:center;
+    color:#555;
+}
+
+/* Rodapé */
+
+.footer{
+    margin-top:25px;
+    text-align:center;
+    color:#888;
+}
+
+.footer a{
+    color:var(--accent);
+    text-decoration:none;
+}
+
+.footer a:hover{
+    text-decoration:underline;
+}
+
+/* Responsivo */
+
+@media (max-width:500px){
+
+    .login{
+        width:92%;
+        padding:30px;
+    }
+
+    h1{
+        font-size:34px;
+    }
+
+}
+</style>
+
+</head>
+<body>
+
+<div class="login">
+
+    <a href="index.html" class="logo">
+        CodeFlow
+    </a>
+
+    <h1>Bem-vindo.</h1>
+
+    <p class="subtitle">
+        Entre para acessar seu dashboard.
+    </p>
+
+    <input
+        class="input"
+        type="email"
+        placeholder="Seu e-mail">
+
+    <input
+        class="input"
+        type="password"
+        placeholder="Sua senha">
+
+    <div class="row">
+
+        <label>
+            <input type="checkbox">
+            Lembrar-me
+        </label>
+
+        <a href="#">
+            Esqueceu a senha?
+        </a>
+
+    </div>
+
+    <button>
+        Entrar
+    </button>
+
+    <div class="divider">
+        ──────── ou ────────
+    </div>
+
+    <button class="github">
+        Entrar com GitHub
+    </button>
+
+    <div class="footer">
+        Não possui conta?
+        <a href="#">
+            Criar conta
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
